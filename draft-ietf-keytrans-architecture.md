@@ -253,7 +253,7 @@ response, functioning as a credential, in encrypted messages to other users.
 Required monitoring is provided proactively." }
 
 
-## Out-of-Band Communication
+## Forked view prevention
 
 It is sometimes possible for a Transparency Log to present forked views of data
 to different users. This means that, from an individual user's perspective, a
@@ -270,9 +270,12 @@ they hold on to this forked view forever and reject the output of any subsequent
 queries that are inconsistent with it.
 
 This provides ample opportunity for users to detect when a fork has been
-presented, but isn't in itself sufficient for detection. To detect forks, users
-must either use **peer-to-peer communication** or **anonymous communication**
-with the Transparency Log.
+presented, but isn't in itself sufficient for detection.
+
+### Out-of-Band Communication
+
+To detect forks, users may either use **peer-to-peer communication** or
+**anonymous communication** with the Transparency Log.
 
 With peer-to-peer communication, two users gossip with each other to establish
 that they both have the same view of the log's data. This gossip is able to
@@ -310,6 +313,24 @@ authenticated requests to a Transparency Log. Users ensure consistency of tree
 heads by either comparing amongst themselves, or by contacting the Transparency
 Log over an anonymous channel. Requests that require authorization are not
 available over the anonymous channel." }
+
+## Witnessing
+
+To prevent forks, transparency logs should consider leveraging one or more third party
+auditor(s). As long as the user assumes the third party auditor is honest and
+not colluding with the log operator, the log can only present the view signed
+by the auditor.
+It is possible to conceive lightweight auditor that only check that the logs epochs
+are increasing (sequentially?), and sign the hash of that epoch along with its height.
+
+This guarantees there is no split view, and is lightweigh enough that it should not
+prevent logs from operating smoothly.
+We refer to such signing party as a witness: they acknowledge they have verified a
+property. In this case, that the log height is increasing.
+
+An auditor as described below in the {{third-party-auditing}} is a witness, with more
+guarantees; it verifies the conysistency proof. Witness could guarantee they back-up
+data, that they will host an API, or others.
 
 # Deployment Modes
 
@@ -365,7 +386,7 @@ and regularly engaging in out-of-band communication. Enabling this
 higher-security mode allows users to double-check that the third-party is not
 colluding with the Transparency Log to serve malicious data.
 
-## Contact Monitoring
+## Contact Monitoring {#contact-monitoring}
 
 With the Contact Monitoring deployment mode, the monitoring burden is split
 between both the owner of a label and those that look up the label. Stated as simply
@@ -425,7 +446,7 @@ queries for the label for some time into the future to maintain security. These
 Monitor queries must be permitted, regardless of whether or not the user could
 still execute the same Search or Update query now.
 
-## Third-Party Auditing
+## Third-Party Auditing {#third-party-auditing}
 
 With the Third-Party Auditing deployment mode, the transparency log obtains
 signatures from a lightweight third-party auditor attesting to the fact that the
